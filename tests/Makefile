@@ -1,0 +1,24 @@
+.PHONY: test libco
+
+all: libco-test-64 libco-test-32
+
+test: libco all
+	@echo "==== TEST 64 bit ===="
+	@LD_LIBRARY_PATH=.. ./libco-test-64
+	@echo "==== TEST 32 bit ===="
+	@LD_LIBRARY_PATH=.. ./libco-test-32
+
+libco-test-64: main.c
+
+libco:
+	@cd .. && gcc -m64 -fPIC -shared -o libco-64.so co.c
+	@cd .. && gcc -m32 -fPIC -shared -o libco-32.so co.c
+
+libco-test-64: main.c
+	gcc -I.. -L.. -m64 main.c -o libco-test-64 -lco-64 -g
+
+libco-test-32: main.c
+	gcc -I.. -L.. -m32 main.c -o libco-test-32 -lco-32 -g
+
+clean:
+	rm -f libco-test-*
